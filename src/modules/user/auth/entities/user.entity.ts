@@ -1,6 +1,7 @@
 import { Exclude, Transform } from "class-transformer";
 import { BaseTable } from "src/common/entity/base-table.entity";
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, ManyToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Product } from "../../product/entities/product.entity";
 
 export enum Role {
     admin,
@@ -57,4 +58,10 @@ export class User extends BaseTable {
     })
     @Transform(({ value }) => value === null ? null : value)
     lastLoginAt: Date | null;
+
+    @ManyToMany(
+        () => Product,
+        (product) => product.users
+    )
+    products: Product[];
 }

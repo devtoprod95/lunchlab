@@ -7,6 +7,7 @@ import { envVariableKeys } from './common/const/env.const';
 import { APP_FILTER, APP_INTERCEPTOR, RouterModule } from '@nestjs/core';
 import { AllExceptionsFilter } from './common/filter/all-exceptions.filter';
 import { CamelToSnakeInterceptor } from './common/interceptor/camel-to-snake.interceptor';
+import { AdminProductModule } from './modules/admin/product/product.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { CamelToSnakeInterceptor } from './common/interceptor/camel-to-snake.int
       inject: [ConfigService],
     }),
     UserAuthModule,
+    AdminProductModule,
   ],
   providers: [
     {

@@ -1,5 +1,6 @@
 import { Exclude } from "class-transformer";
-import { Column, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { User } from "../../auth/entities/user.entity";
 
 @Entity({
     name: 'products',
@@ -15,6 +16,7 @@ export class Product {
     @Column({ 
         unique: true,
         nullable: false,
+        type: 'int',
         comment: '상품ID'
     })
     productId: number;
@@ -34,4 +36,10 @@ export class Product {
         comment: '상품가격'
     })
     price: number;
+
+    @ManyToMany(
+        () => User,
+        (user) => user.products
+    )
+    users: User[];
 }
