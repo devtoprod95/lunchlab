@@ -9,6 +9,7 @@ export class BaseTable {
         type: 'timestamp',
     })
     @Exclude()
+    @ApiHideProperty()
     createdAt: Date;
       
     @UpdateDateColumn({ 
@@ -17,6 +18,7 @@ export class BaseTable {
         type: 'timestamp',
     })
     @Exclude()
+    @ApiHideProperty()
     updatedAt: Date;
 
     @VersionColumn()

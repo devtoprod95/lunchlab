@@ -1,7 +1,8 @@
 import { Exclude, Transform } from "class-transformer";
 import { BaseTable } from "src/common/entity/base-table.entity";
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, ManyToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Product } from "../../product/entities/product.entity";
+import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 
 export enum Role {
     admin,
@@ -21,6 +22,10 @@ export class User extends BaseTable {
         length: 50, 
         comment: '아이디'
     })
+    @ApiProperty({
+        description: '아이디',
+        example: '홍길test1동'
+    })
     username: string;
 
     @Column({ 
@@ -30,11 +35,16 @@ export class User extends BaseTable {
     @Exclude({
         toPlainOnly: true, // 응답할때 제외
     })
+    @ApiHideProperty()
     password: string;
 
     @Column({ 
         length: 50, 
         comment: '이름'
+    })
+    @ApiProperty({
+        description: '이름',
+        example: '홍길동'
     })
     name: string;
 
@@ -42,11 +52,19 @@ export class User extends BaseTable {
         length: 50, 
         comment: '휴대전화번호 (e164)'
     })
+    @ApiProperty({
+        description: '휴대전화번호 (e164)',
+        example: '+821012341234'
+    })
     phone: string;
 
     @Column({ 
         length: 50, 
         comment: '회사명'
+    })
+    @ApiProperty({
+        description: '회사명',
+        example: '(주) 런치랩'
     })
     company: string;
     
@@ -56,6 +74,11 @@ export class User extends BaseTable {
         nullable: true,
         comment: '마지막 로그인 일시' 
     })
+    @ApiProperty({
+        name: 'last_login_at',
+        description: '마지막 로그인 일시',
+        example: '2023-01-01T12:00:00Z'
+    })
     @Transform(({ value }) => value === null ? null : value)
     lastLoginAt: Date | null;
 
@@ -63,5 +86,6 @@ export class User extends BaseTable {
         () => Product,
         (product) => product.users
     )
+    @ApiHideProperty()
     products: Product[];
 }

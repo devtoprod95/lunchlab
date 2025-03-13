@@ -46,11 +46,10 @@ export class AdminProductService {
 
     const userProduct = await this.userProductRepository.findOne({
       where: {
-        product: { id: product.id },
+        product: { productId },
         user: { id: user.id }
       }
     });
-
     if (!userProduct) {
       // 새로 생성하는 경우
       await this.userProductRepository.save({
@@ -77,7 +76,7 @@ export class AdminProductService {
 
     return await this.userProductRepository.findOne({
         where: {
-            product: { id: productId },
+            product: { productId },
             user: { id: userId }
         },
         relations: ['user', 'product']

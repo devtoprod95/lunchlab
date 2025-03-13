@@ -1,6 +1,7 @@
 import { Exclude } from "class-transformer";
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { User } from "../../auth/entities/user.entity";
+import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 
 @Entity({
     name: 'products',
@@ -11,13 +12,19 @@ export class Product {
     @Exclude({
         toPlainOnly: true, // 응답할때 제외
     })
+    @ApiHideProperty()
     id: number;
 
     @Column({ 
+        name: 'product_id', 
         unique: true,
         nullable: false,
         type: 'int',
         comment: '상품ID'
+    })
+    @ApiProperty({
+        description: '상품ID',
+        example: 1
     })
     productId: number;
 
@@ -25,6 +32,10 @@ export class Product {
         length: 50, 
         nullable: false,
         comment: '상품명'
+    })
+    @ApiProperty({
+        description: '상품명',
+        example: '가정식 도시락'
     })
     name: string;
 
@@ -35,11 +46,16 @@ export class Product {
         default: 0,
         comment: '상품가격'
     })
+    @ApiProperty({
+        description: '상품가격',
+        example: 3000
+    })
     price: number;
 
     @ManyToMany(
         () => User,
         (user) => user.products
     )
+    @ApiHideProperty()
     users: User[];
 }

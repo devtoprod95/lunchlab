@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { LoginUserDto } from './dto/login-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role, User } from './entities/user.entity';
 import { Repository } from 'typeorm';
@@ -46,8 +46,8 @@ export class AuthService {
     }) as User;
   }
 
-  async update(updateUserDto: UpdateUserDto): Promise<{ accessToken: string }> {
-    const { username, password } = updateUserDto;
+  async login(LoginUserDto: LoginUserDto): Promise<{ accessToken: string }> {
+    const { username, password } = LoginUserDto;
     
     const user = await this.authenticate(username, password);
 
