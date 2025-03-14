@@ -1,30 +1,56 @@
 import { AuthService } from './auth.service';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
-import { Product } from '../product/entities/product.entity';
-import { UserProduct } from './entities/user-product.entity';
-import { Order } from '../order/entities/order.entity';
-import { OrderProduct } from '../order/entities/order-product.entity';
-import { TestBed } from '@automock/jest';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { Test, TestingModule } from '@nestjs/testing';
+
+const mockUserRepository = {
+  findOne: jest.fn(),
+  save   : jest.fn(),
+  find   : jest.fn(),
+  update : jest.fn(),
+  delete : jest.fn()
+}
+const mockConfigService = {
+  get: jest.fn()
+}
+const mockJwtService = {
+  signAsync  : jest.fn(),
+  verifyAsync: jest.fn(),
+  decode     : jest.fn()
+}
 
 describe('AuthService', () => {
-  let service               : AuthService;
-  let userRepository        : jest.Mocked<Repository<User>>;
-  let productRepository     : jest.Mocked<Repository<Product>>;
-  let userProductRepository : jest.Mocked<Repository<UserProduct>>;
-  let orderRepository       : jest.Mocked<Repository<Order>>;
-  let orderProductRepository: jest.Mocked<Repository<OrderProduct>>;
+  let service       : AuthService;
+  let userRepository: Repository<User>;
+  let configService : ConfigService;
+  let jwtService    : JwtService;
 
   beforeEach(async () => {
-    const {unit, unitRef} = TestBed.create(AuthService).compile();
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        AuthService,
+        {
+          provide : getRepositoryToken(User),
+          useValue: mockUserRepository
+        },
+        {
+          provide : ConfigService,
+          useValue: mockConfigService
+        },
+        {
+          provide : JwtService,
+          useValue: mockJwtService
+        }
+      ],
+    }).compile();
 
-    service                 = unit;
-    userRepository          = unitRef.get(getRepositoryToken(User) as string);
-    productRepository       = unitRef.get(getRepositoryToken(Product) as string);
-    userProductRepository   = unitRef.get(getRepositoryToken(UserProduct) as string);
-    orderRepository         = unitRef.get(getRepositoryToken(Order) as string);
-    orderProductRepository  = unitRef.get(getRepositoryToken(OrderProduct) as string);
+    service        = module.get<AuthService>(AuthService);
+    userRepository = module.get<Repository<User>>(getRepositoryToken(User));
+    configService  = module.get<ConfigService>(ConfigService);
+    jwtService     = module.get<JwtService>(JwtService);
   });
 
   it('should be defined', () => {
