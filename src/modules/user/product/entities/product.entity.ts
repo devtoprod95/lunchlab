@@ -3,6 +3,7 @@ import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "t
 import { User } from "../../auth/entities/user.entity";
 import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 import { OrderProduct } from "../../order/entities/order-product.entity";
+import { UserProduct } from "../../auth/entities/user-product.entity";
 
 @Entity({
     name: 'products',
@@ -62,6 +63,13 @@ export class Product {
         toPlainOnly: true, // 응답할때만 제외
     })
     users: User[];
+
+    @OneToMany(() => UserProduct, userProduct => userProduct.product)
+    @ApiHideProperty()
+    @Exclude({
+        toPlainOnly: true, // 응답할때만 제외
+    })
+    userProducts: UserProduct[];
 
     @OneToMany(() => OrderProduct, orderProduct => orderProduct.product)
     @ApiHideProperty()

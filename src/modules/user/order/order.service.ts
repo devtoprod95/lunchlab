@@ -97,28 +97,41 @@ export class OrderService {
     // 페이지네이션된 데이터 조회
     const orders = await this.orderRepository.find({
       where,
-      relations: ['orderProducts', 'orderProducts.product'],
+      relations: ['orderProducts.product', 'user.userProducts'],
       skip,
       take
     });
 
     // 응답 형식으로 변환
     const formattedOrders = orders.map(order => {
-      const items = order.orderProducts.map(op => ({
-        id: op.id,
-        productId: op.product.productId,
-        productName: op.product.name,
-        quantity: op.quantity,
-        amount: op.quantity * op.product.price
-      }));
+      const items = order.orderProducts.map(op => {
+        const userProduct = order.user.userProducts.find(
+          up => up.productId === op.product.productId
+        );
+
+        // UserProduct 가격이 있으면 사용, 없으면 Product 가격 사용
+        const price = userProduct?.price ?? op.product.price;
+        const isSetting = userProduct !== undefined ? true : false;
+        
+        return {
+          productId: op.product.productId,
+          productName: op.product.name,
+          quantity: op.quantity,
+          amount: op.quantity * price,
+          originPrice: op.product.price,
+          settingPrice: userProduct?.price ?? 0,
+          isSetting
+        };
+      });
       
       const totalAmount = items.reduce((sum, item) => sum + item.amount, 0);
       
       return {
         id: order.id,
+        userId: order.user.id,
         deliveryDate: order.deliveryDate,
         totalAmount,
-        items
+        options: items
       };
     });
     

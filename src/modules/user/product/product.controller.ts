@@ -4,8 +4,7 @@ import { Role } from '../auth/entities/user.entity';
 import { RBAC } from '../auth/decorator/rbac.decorator';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ListProductDto } from './dto/list-product.dto';
-import { ApiPaginatedResponse } from 'src/common/decorator/api-paginated-response.decorator';
-import { UserProduct } from '../auth/entities/user-product.entity';
+import { ProductListResponseSchema } from './decorator/product-list-response.decorator';
 
 @Controller('user/product')
 @ApiTags('User.Product')
@@ -24,7 +23,7 @@ export class ProductController {
   @ApiOperation({
     description: '상품 목록 및 가격 조회 endPoint'
   })
-  @ApiPaginatedResponse(UserProduct)
+  @ProductListResponseSchema()
   findAll(
     @Body() listProductDto: ListProductDto
   ) {

@@ -14,9 +14,9 @@ export class OrderProduct {
 
     @ManyToOne(() => Order)
     @JoinColumn({ name: 'order_id' })
-    @ApiProperty({
-        description: '주문 정보',
-        type: () => Order
+    @ApiHideProperty()
+    @Exclude({
+        toPlainOnly: true, // 응답할때 제외
     })
     order: Order;
 

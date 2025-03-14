@@ -4,6 +4,7 @@ import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "t
 import { Product } from "../../product/entities/product.entity";
 import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 import { Order } from "../../order/entities/order.entity";
+import { UserProduct } from "./user-product.entity";
 
 export enum Role {
     admin,
@@ -92,6 +93,13 @@ export class User extends BaseTable {
         toPlainOnly: true, // 응답할때만 제외
     })
     products: Product[];
+
+    @OneToMany(() => UserProduct, userProduct => userProduct.user)
+    @ApiHideProperty()
+    @Exclude({
+        toPlainOnly: true, // 응답할때만 제외
+    })
+    userProducts: UserProduct[];
 
     @OneToMany(() => Order, order => order.user)
     orders: Order[];

@@ -10,6 +10,7 @@ import { PagePaginationDto } from 'src/common/dto/page-pagination.dto';
 import { TransactionInterceptor } from 'src/common/interceptor/transaction.interceptor';
 import { QueryRunner } from 'src/common/decorator/query-runner.decorator';
 import { QueryRunner as QR } from 'typeorm';
+import { OrderListResponseSchema } from './decorator/order-list-response.decorator';
 
 @Controller('user/order')
 @ApiTags('User.Order')
@@ -45,6 +46,7 @@ export class OrderController {
     description: '배송 날짜 (YYYY-MM-DD 형식)',
     example: '2025-02-20' 
   })
+  @OrderListResponseSchema()
   findAll(
     @Param('deliveryDate', DateValidationPipe) deliveryDate: string,
     @Query() pagePaginationDto: PagePaginationDto
