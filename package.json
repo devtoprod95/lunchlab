@@ -17,7 +17,15 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:user-auth": "jest --testPathPattern=src/modules/user/auth --coverage --collectCoverageFrom=src/modules/user/auth/**",
+    "test:user-auth:watch": "jest --watch --testPathPattern=src/modules/user/auth --coverage --collectCoverageFrom=src/modules/user/auth/**",
+    "test:user-order": "jest --testPathPattern=src/modules/user/order --coverage --collectCoverageFrom=src/modules/user/order/**",
+    "test:user-order:watch": "jest --watch --testPathPattern=src/modules/user/order --coverage --collectCoverageFrom=src/modules/user/order/**",
+    "test:user-product": "jest --testPathPattern=src/modules/user/product --coverage --collectCoverageFrom=src/modules/user/product/**",
+    "test:user-product:watch": "jest --watch --testPathPattern=src/modules/user/product --coverage --collectCoverageFrom=src/modules/user/product/**",
+    "test:admin-product": "jest --testPathPattern=src/modules/admin/product --coverage --collectCoverageFrom=src/modules/admin/product/**",
+    "test:admin-product:watch": "jest --watch --testPathPattern=src/modules/admin/product --coverage --collectCoverageFrom=src/modules/admin/product/**"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -84,6 +92,16 @@
     },
     "collectCoverageFrom": [
       "**/*.(t|j)s"
+    ],
+    "coveragePathIgnorePatterns": [
+      "module.ts",
+      "dto.ts",
+      "entity.ts",
+      "middleware.ts",
+      "strategy.ts",
+      "decorator.ts",
+      "pipe.ts",
+      "common/*"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
