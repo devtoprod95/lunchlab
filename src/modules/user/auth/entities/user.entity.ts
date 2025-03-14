@@ -1,8 +1,9 @@
 import { Exclude, Transform } from "class-transformer";
 import { BaseTable } from "src/common/entity/base-table.entity";
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Product } from "../../product/entities/product.entity";
 import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
+import { Order } from "../../order/entities/order.entity";
 
 export enum Role {
     admin,
@@ -91,4 +92,7 @@ export class User extends BaseTable {
         toPlainOnly: true, // 응답할때만 제외
     })
     products: Product[];
+
+    @OneToMany(() => Order, order => order.user)
+    orders: Order[];
 }

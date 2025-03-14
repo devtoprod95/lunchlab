@@ -6,12 +6,16 @@ import { User } from './entities/user.entity';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { Product } from '../product/entities/product.entity';
+import { Order } from '../order/entities/order.entity';
+import { OrderProduct } from '../order/entities/order-product.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       User,
-      Product
+      Product,
+      Order,
+      OrderProduct
     ]),
     JwtModule.register({}),
   ],

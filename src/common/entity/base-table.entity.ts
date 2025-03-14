@@ -1,23 +1,27 @@
 import { ApiHideProperty } from "@nestjs/swagger";
 import { Exclude } from "class-transformer";
-import { CreateDateColumn, UpdateDateColumn, VersionColumn } from "typeorm";
+import { Column, CreateDateColumn, UpdateDateColumn, VersionColumn } from "typeorm";
 
 export class BaseTable {
-    @CreateDateColumn({ 
-        name: 'created_at',
+    @Column({ 
+        name: 'created_at', 
+        type: 'datetime',
+        nullable: false,
         comment: '생성 일시',
-        type: 'timestamp',
+        default: () => "NOW() + INTERVAL 9 HOUR",
     })
     @Exclude({
         toPlainOnly: true, // 응답할때만 제외
     })
     @ApiHideProperty()
     createdAt: Date;
-      
-    @UpdateDateColumn({ 
-        name: 'updated_at',
+
+    @Column({ 
+        name: 'updated_at', 
+        type: 'datetime',
+        nullable: false,
         comment: '수정 일시',
-        type: 'timestamp',
+        default: () => "NOW()",
     })
     @Exclude({
         toPlainOnly: true, // 응답할때만 제외

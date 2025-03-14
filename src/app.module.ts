@@ -11,6 +11,7 @@ import { AdminProductModule } from './modules/admin/product/product.module';
 import { BearerTokenMiddleware } from './modules/user/auth/middleware/bearer-token.middleware';
 import { RBACGuard } from './modules/user/auth/guard/rbac.guard';
 import { UserProductModule } from './modules/user/product/product.module';
+import { UserOrderModule } from './modules/user/order/order.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { UserProductModule } from './modules/user/product/product.module';
     }),
     UserAuthModule,
     UserProductModule,
+    UserOrderModule,
     AdminProductModule,
   ],
   providers: [

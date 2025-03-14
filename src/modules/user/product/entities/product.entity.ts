@@ -1,7 +1,8 @@
 import { Exclude } from "class-transformer";
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "../../auth/entities/user.entity";
 import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
+import { OrderProduct } from "../../order/entities/order-product.entity";
 
 @Entity({
     name: 'products',
@@ -61,4 +62,11 @@ export class Product {
         toPlainOnly: true, // 응답할때만 제외
     })
     users: User[];
+
+    @OneToMany(() => OrderProduct, orderProduct => orderProduct.product)
+    @ApiHideProperty()
+    @Exclude({
+        toPlainOnly: true, // 응답할때만 제외
+    })
+    orderProducts: OrderProduct[];
 }
