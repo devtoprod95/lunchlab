@@ -1,12 +1,13 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Order } from './entities/order.entity';
-import { In, Repository } from 'typeorm';
+import { Between, FindOptionsWhere, In, Repository } from 'typeorm';
 import { OrderProduct } from './entities/order-product.entity';
 import { User } from '../auth/entities/user.entity';
 import { Product } from '../product/entities/product.entity';
+import { PagePaginationDto } from 'src/common/dto/page-pagination.dto';
+import { PaginatedResponse } from 'src/common/interfaces/paginated-response.interface';
 
 @Injectable()
 export class OrderService {
@@ -73,19 +74,66 @@ export class OrderService {
     });
   }
 
-  findAll() {
-    return `This action returns all order`;
-  }
+  async findAll(deliveryDate: string, pagePaginationDto: PagePaginationDto): Promise<PaginatedResponse<any>> {
+    const { page = 1, take = 10 } = pagePaginationDto;
+  
+    // skip 계산 (0부터 시작)
+    const skip = (page - 1) * take;
 
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
-  }
+    // 날짜 시작과 끝 계산
+    const startDate = new Date(deliveryDate);
+    startDate.setHours(0, 0, 0, 0);
+    const endDate = new Date(deliveryDate);
+    endDate.setHours(23, 59, 59, 999);
+    
+    // 조건 설정 - Between 사용
+    const where: FindOptionsWhere<Order> = {
+      deliveryDate: Between(startDate, endDate)
+    };
+  
+    // 전체 항목 수 조회
+    const totalItems = await this.orderRepository.count({ where });
+    
+    // 페이지네이션된 데이터 조회
+    const orders = await this.orderRepository.find({
+      where,
+      relations: ['orderProducts', 'orderProducts.product'],
+      skip,
+      take
+    });
 
-  update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} order`;
+    // 응답 형식으로 변환
+    const formattedOrders = orders.map(order => {
+      const items = order.orderProducts.map(op => ({
+        id: op.id,
+        productId: op.product.productId,
+        productName: op.product.name,
+        quantity: op.quantity,
+        amount: op.quantity * op.product.price
+      }));
+      
+      const totalAmount = items.reduce((sum, item) => sum + item.amount, 0);
+      
+      return {
+        id: order.id,
+        deliveryDate: order.deliveryDate,
+        totalAmount,
+        items
+      };
+    });
+    
+    // 전체 페이지 수 계산
+    const totalPages = Math.ceil(totalItems / take);
+    
+    // 페이지네이션 응답 반환
+    return {
+      items: formattedOrders,
+      meta: {
+        totalItems,
+        totalPages,
+        currentPage: page,
+        take
+      }
+    };
   }
 }

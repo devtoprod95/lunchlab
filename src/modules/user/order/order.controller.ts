@@ -1,13 +1,17 @@
-import { Controller, Get, Post, Body, UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseInterceptors, ClassSerializerInterceptor, Param, Query } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RBAC } from '../auth/decorator/rbac.decorator';
 import { Role } from '../auth/entities/user.entity';
 import { UserId } from '../auth/decorator/user-id.decorator';
+import { DateValidationPipe } from 'src/common/pipe/date-validation.pipe';
+import { PagePaginationDto } from 'src/common/dto/page-pagination.dto';
 
 @Controller('user/order')
 @ApiTags('User.Order')
+@ApiBearerAuth()
+@RBAC(Role.user)
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiResponse({
   status: 400,
@@ -17,8 +21,6 @@ export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
   @Post()
-  @RBAC(Role.user)
-  @ApiBearerAuth()
   @ApiOperation({
     description: '주문 등록 endPoint'
   })
@@ -29,8 +31,19 @@ export class OrderController {
     return this.orderService.create(createOrderDto, userId);
   }
 
-  @Get()
-  findAll() {
-    return this.orderService.findAll();
+  @Get(':deliveryDate')
+  @ApiOperation({
+    description: '주문 조회 endPoint'
+  })
+  @ApiParam({ 
+    name: 'deliveryDate', 
+    description: '배송 날짜 (YYYY-MM-DD 형식)',
+    example: '2025-02-20' 
+  })
+  findAll(
+    @Param('deliveryDate', DateValidationPipe) deliveryDate: string,
+    @Query() pagePaginationDto: PagePaginationDto
+  ) {
+    return this.orderService.findAll(deliveryDate, pagePaginationDto);
   }
 }

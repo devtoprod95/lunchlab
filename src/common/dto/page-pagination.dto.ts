@@ -1,11 +1,20 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { IsInt, IsOptional } from "class-validator";
 
 export class PagePaginationDto {
     @IsInt()
     @IsOptional()
-    page: number = 1;
+    @ApiProperty({
+        description: '현재 페이지',
+        example: 1
+    })
+    page?: number = 1;
 
     @IsInt()
     @IsOptional()
-    take: number = 10;
+    @ApiProperty({
+        description: '페이지 수',
+        example: 10
+    })
+    take?: number = 10;
 }

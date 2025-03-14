@@ -13,7 +13,7 @@ export class ProductService {
   ){}
 
   async findAll(listProductDto: ListProductDto): Promise<PaginatedResponse<UserProduct>> {
-    const { page, take, user_id } = listProductDto;
+    const { page = 1 , take = 10, user_id } = listProductDto;
 
     // skip 계산 (0부터 시작)
     const skip = (page - 1) * take;
