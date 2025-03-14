@@ -1,20 +1,11 @@
 import { Module } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { OrderController } from './order.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Order } from './entities/order.entity';
-import { OrderProduct } from './entities/order-product.entity';
-import { Product } from '../product/entities/product.entity';
-import { User } from '../auth/entities/user.entity';
+import { CommonEntitiesModule } from 'src/modules/common-entities.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      Order,
-      OrderProduct,
-      Product,
-      User
-    ]),
+    CommonEntitiesModule
   ],
   controllers: [OrderController],
   providers: [OrderService],

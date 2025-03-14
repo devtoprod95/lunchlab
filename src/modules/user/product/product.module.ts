@@ -1,19 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { ProductController } from './product.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserProduct } from '../auth/entities/user-product.entity';
-import { JwtModule } from '@nestjs/jwt';
+import { CommonEntitiesModule } from 'src/modules/common-entities.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      UserProduct
-    ]),
-    JwtModule.register({}),
+    CommonEntitiesModule,
   ],
   controllers: [ProductController],
   providers: [ProductService],
-  exports: [ProductService, JwtModule],
+  exports: [ProductService],
 })
 export class UserProductModule {}

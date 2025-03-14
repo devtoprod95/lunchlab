@@ -12,6 +12,7 @@ import { BearerTokenMiddleware } from './modules/user/auth/middleware/bearer-tok
 import { RBACGuard } from './modules/user/auth/guard/rbac.guard';
 import { UserProductModule } from './modules/user/product/product.module';
 import { UserOrderModule } from './modules/user/order/order.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { UserOrderModule } from './modules/user/order/order.module';
         ENV: Joi.string().valid('test', 'dev', 'prod').required(),
         DB_TYPE: Joi.string().valid('mysql').required(),
         DB_HOST: Joi.string().required(),
-        DB_PORT: Joi.string().required(),
+        DB_PORT: Joi.number().required(),
         DB_USERNAME: Joi.string().required(),
         DB_PASSWORD: Joi.string().required(),
         DB_DATABASE: Joi.string().required(),
@@ -49,6 +50,9 @@ import { UserOrderModule } from './modules/user/order/order.module';
         }),
       }),
       inject: [ConfigService],
+    }),
+    JwtModule.register({
+      global: true,
     }),
     UserAuthModule,
     UserProductModule,
