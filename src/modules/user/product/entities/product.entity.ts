@@ -1,5 +1,5 @@
 import { Exclude } from "class-transformer";
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "../../auth/entities/user.entity";
 import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 
@@ -57,5 +57,8 @@ export class Product {
         (user) => user.products
     )
     @ApiHideProperty()
+    @Exclude({
+        toPlainOnly: true, // 응답할때만 제외
+    })
     users: User[];
 }

@@ -33,7 +33,7 @@ export class User extends BaseTable {
         comment: '패스워드' 
     })
     @Exclude({
-        toPlainOnly: true, // 응답할때 제외
+        toPlainOnly: true, // 응답할때만 제외
     })
     @ApiHideProperty()
     password: string;
@@ -87,5 +87,8 @@ export class User extends BaseTable {
         (product) => product.users
     )
     @ApiHideProperty()
+    @Exclude({
+        toPlainOnly: true, // 응답할때만 제외
+    })
     products: Product[];
 }

@@ -8,7 +8,9 @@ export class BaseTable {
         comment: '생성 일시',
         type: 'timestamp',
     })
-    @Exclude()
+    @Exclude({
+        toPlainOnly: true, // 응답할때만 제외
+    })
     @ApiHideProperty()
     createdAt: Date;
       
@@ -17,12 +19,16 @@ export class BaseTable {
         comment: '수정 일시',
         type: 'timestamp',
     })
-    @Exclude()
+    @Exclude({
+        toPlainOnly: true, // 응답할때만 제외
+    })
     @ApiHideProperty()
     updatedAt: Date;
 
     @VersionColumn()
-    @Exclude()
+    @Exclude({
+        toPlainOnly: true, // 응답할때만 제외
+    })
     @ApiHideProperty()
     version: number;
 }

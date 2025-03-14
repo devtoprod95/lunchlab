@@ -17,6 +17,6 @@ import { Product } from '../product/entities/product.entity';
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
-  exports: [AuthService],
+  exports: [AuthService, JwtStrategy, JwtModule],
 })
 export class UserAuthModule {}

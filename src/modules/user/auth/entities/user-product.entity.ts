@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, JoinColumn } from 't
 import { User } from './user.entity';
 import { Product } from '../../product/entities/product.entity';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 
 @Entity({
     name: 'users_products',
@@ -10,6 +11,9 @@ import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 export class UserProduct {
     @PrimaryGeneratedColumn()
     @ApiHideProperty()
+    @Exclude({
+        toPlainOnly: true, // 응답할때만 제외
+    })
     id: number;
 
     @ManyToOne(() => User, user => user.products)

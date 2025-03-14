@@ -1,13 +1,16 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserAuthModule } from './modules/user/auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
 import { envVariableKeys } from './common/const/env.const';
-import { APP_FILTER, APP_INTERCEPTOR, RouterModule } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AllExceptionsFilter } from './common/filter/all-exceptions.filter';
 import { CamelToSnakeInterceptor } from './common/interceptor/camel-to-snake.interceptor';
 import { AdminProductModule } from './modules/admin/product/product.module';
+import { BearerTokenMiddleware } from './modules/user/auth/middleware/bearer-token.middleware';
+import { RBACGuard } from './modules/user/auth/guard/rbac.guard';
+import { UserProductModule } from './modules/user/product/product.module';
 
 @Module({
   imports: [
@@ -47,9 +50,14 @@ import { AdminProductModule } from './modules/admin/product/product.module';
       inject: [ConfigService],
     }),
     UserAuthModule,
+    UserProductModule,
     AdminProductModule,
   ],
   providers: [
+    {
+      provide: APP_GUARD,
+      useClass: RBACGuard
+    },
     {
       provide: APP_INTERCEPTOR,
       useClass: CamelToSnakeInterceptor
@@ -60,4 +68,24 @@ import { AdminProductModule } from './modules/admin/product/product.module';
     },
   ]
 })
-export class AppModule {}
+
+export class AppModule implements NestModule{
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(
+      BearerTokenMiddleware,
+    ).exclude(
+      {
+        path: '/user/auth/create',
+        method: RequestMethod.POST
+      },
+      {
+        path: '/user/auth/login',
+        method: RequestMethod.POST
+      },
+      {
+        path: '/admin/product/setting',
+        method: RequestMethod.POST
+      },
+    ).forRoutes('*')
+  }
+}

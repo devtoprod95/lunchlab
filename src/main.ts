@@ -11,6 +11,8 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('Admin.Product', '관리자용 상품 관리 API')
     .addTag('User.Auth', '회원용 인증 관리 API')
+    .addTag('User.Product', '회원용 상품 관리 API')
+    .addTag('User.Order', '회원용 주문 관리 API')
     .addBearerAuth()
     .build();
 

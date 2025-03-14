@@ -2,7 +2,7 @@ import { Catch, ExceptionFilter, ArgumentsHost, HttpException, HttpStatus } from
 
 export interface ApiResponse<T> {
     success: boolean;
-    statusCode: number;
+    status_code: number;
     // message: string;
     data?: T;
     error?: string | string[];
@@ -37,7 +37,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     const errorResponse: ApiResponse<null> = {
       success: false,
-      statusCode: status,
+      status_code: status,
     //   error: exception instanceof Error ? exception.message : String(exception),
       error: message,
       timestamp: new Date().toISOString(),
