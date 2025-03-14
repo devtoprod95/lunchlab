@@ -7,6 +7,9 @@ import { Role } from '../auth/entities/user.entity';
 import { UserId } from '../auth/decorator/user-id.decorator';
 import { DateValidationPipe } from 'src/common/pipe/date-validation.pipe';
 import { PagePaginationDto } from 'src/common/dto/page-pagination.dto';
+import { TransactionInterceptor } from 'src/common/interceptor/transaction.interceptor';
+import { QueryRunner } from 'src/common/decorator/query-runner.decorator';
+import { QueryRunner as QR } from 'typeorm';
 
 @Controller('user/order')
 @ApiTags('User.Order')
@@ -24,11 +27,13 @@ export class OrderController {
   @ApiOperation({
     description: '주문 등록 endPoint'
   })
+  @UseInterceptors(TransactionInterceptor)
   create(
     @Body() createOrderDto: CreateOrderDto,
-    @UserId() userId: number
+    @UserId() userId: number,
+    @QueryRunner() queryRunner: QR,
   ) {
-    return this.orderService.create(createOrderDto, userId);
+    return this.orderService.create(createOrderDto, userId, queryRunner);
   }
 
   @Get(':deliveryDate')

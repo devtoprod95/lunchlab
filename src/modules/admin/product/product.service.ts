@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { UpsertProductDto } from './dto/upsert-product-setting.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from 'src/modules/user/product/entities/product.entity';
-import { Repository } from 'typeorm';
+import { QueryRunner, Repository } from 'typeorm';
 import { User } from 'src/modules/user/auth/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { UserProduct } from 'src/modules/user/auth/entities/user-product.entity';
@@ -19,7 +19,7 @@ export class AdminProductService {
       private readonly configService: ConfigService,
   ){}
 
-  async upsert(upsertProductDto: UpsertProductDto): Promise<UserProduct> {
+  async upsert(upsertProductDto: UpsertProductDto, qr: QueryRunner): Promise<UserProduct> {
     const { productId, userId, price, hidden } = upsertProductDto;
 
     const product = await this.productRepository.findOne({
@@ -52,7 +52,7 @@ export class AdminProductService {
     });
     if (!userProduct) {
       // 새로 생성하는 경우
-      await this.userProductRepository.save({
+      await qr.manager.save(UserProduct, {
         product,
         user,
         price: price !== undefined ? price : product.price,
@@ -71,15 +71,15 @@ export class AdminProductService {
       if (hidden !== undefined) {
         updateData.hidden = hidden;
       }
-      await this.userProductRepository.save(updateData);
+      await qr.manager.save(UserProduct, updateData);
     }
 
-    return await this.userProductRepository.findOne({
-        where: {
-            product: { productId },
-            user: { id: userId }
-        },
-        relations: ['user', 'product']
+    return await qr.manager.findOne(UserProduct, {
+      where: {
+          product: { productId },
+          user: { id: userId }
+      },
+      relations: ['user', 'product']
     }) as UserProduct;
   }
 }

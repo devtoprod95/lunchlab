@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { CreateOrderDto } from './dto/create-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Order } from './entities/order.entity';
-import { Between, FindOptionsWhere, In, Repository } from 'typeorm';
+import { Between, FindOptionsWhere, In, QueryRunner, Repository } from 'typeorm';
 import { OrderProduct } from './entities/order-product.entity';
 import { User } from '../auth/entities/user.entity';
 import { Product } from '../product/entities/product.entity';
@@ -22,7 +22,7 @@ export class OrderService {
     private readonly productRepository: Repository<Product>,
   ){}
 
-  async create(createOrderDto: CreateOrderDto, userId: number): Promise<Order> {
+  async create(createOrderDto: CreateOrderDto, userId: number, qr: QueryRunner): Promise<Order> {
     const { deliveryDate, comment, items } = createOrderDto;
 
     const user = await this.userRepository.findOne({ where: { id: userId } });
@@ -51,7 +51,7 @@ export class OrderService {
     order.user = user;
     
     // 주문 저장
-    const savedOrder = await this.orderRepository.save(order);
+    const savedOrder = await qr.manager.save(order);
     
     for (const item of items) {
       // 이미 검증된 상품 찾기
@@ -64,13 +64,13 @@ export class OrderService {
       orderProduct.quantity = item.quantity;
       
       // 주문 상품 저장
-      await this.orderProductRepository.save(orderProduct);
+      await qr.manager.save(orderProduct);
     }
-    
+
     // 관계가 포함된 주문 객체 조회하여 반환
-    return this.orderRepository.findOneOrFail({
+    return qr.manager.findOneOrFail(Order, {
       where: { id: savedOrder.id },
-      relations: ['user', 'orderProducts', 'orderProducts.product']
+      relations: ['orderProducts']
     });
   }
 
